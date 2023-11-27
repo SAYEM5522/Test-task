@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { useSelectOptions } from '../hooks/useSelectOptions';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -6,30 +6,24 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-
+import useSectorData from '../hooks/useSectorData';
+import useFormData from '../hooks/useFormData';
+import { CircularProgress } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
-const names = [
-  'Oliver Hansen',
-  'Van Henry',
-  'April Tucker',
-  'Ralph Hubbard',
-  'Omar Alexander',
-  'Carlos Abbott',
-  'Miriam Wagner',
-  'Bradley Wilkerson',
-  'Virginia Andrews',
-  'Kelly Snyder',
-];
-const MainForm = () => {
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
     },
-  };
+  },
+};
+const MainForm = () => {
+  const {sectorData}=useSectorData()
+  const {error,loading,fetchFormData}=useFormData()
   const [formData, setFormData] = useState({
     name: '',
     agreeToTerms: false,
@@ -38,16 +32,14 @@ const MainForm = () => {
   const isSaveDisabled = !formData.name || selectedOptions.length === 0 || !formData.agreeToTerms;
   const handleSave = () => {
     if(!isSaveDisabled){
-      console.log({
+      const data={
         name:formData.name,
-        agreeToTerms:formData.agreeToTerms,
-        selectedOptions:selectedOptions
-        
-       })
+        terms:formData.agreeToTerms,
+        sectors:selectedOptions
+      }
+      fetchFormData(data)
     }
   };
-  
-  
   return (
     <div >
       <p className='font-serif font-medium text-lg text-center'>Please enter your name and pick the Sectors you are currently involved in.</p>
@@ -69,8 +61,8 @@ const MainForm = () => {
           renderValue={renderSelectedOptions}
           MenuProps={MenuProps}
         >
-          {names.map((name) => (
-            <MenuItem key={name} value={name}>
+          {sectorData?.sectors[0]?.sectors?.map((name,index) => (
+            <MenuItem key={index} value={name}>
               {name}
             </MenuItem>
           ))}
@@ -81,9 +73,27 @@ const MainForm = () => {
        <label className='mr-2'>Agree to Terms:</label>
       <input type="checkbox" className='w-[20px] h-[20px]' checked={formData.agreeToTerms} onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })} />
        </div>
-      <button disabled={isSaveDisabled} className={`w-[80%] ${isSaveDisabled&&"cursor-not-allowed"} h-14 bg-white text-black mx-auto rounded-md mt-2`} onClick={handleSave}>Save</button>
-
-
+      <button disabled={isSaveDisabled} className={`w-[80%] ${isSaveDisabled&&"cursor-not-allowed"} h-14 bg-white text-black mx-auto rounded-md mt-5`} onClick={handleSave}>
+        {
+          loading?(
+            <CircularProgress size={22} />
+          ):(
+            <p>save</p>
+          )
+        }
+      </button>
+      <ToastContainer
+      position="top-center"
+      autoClose={1500}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="dark"
+      />
     </div>
   )
 }
