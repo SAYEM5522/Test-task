@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react'
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelectOptions } from '../hooks/useSelectOptions';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
@@ -12,6 +11,7 @@ import { CircularProgress } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import HeaderText from './HeaderText';
+
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -22,35 +22,68 @@ const MenuProps = {
     },
   },
 };
+
 const MainForm = () => {
-  const {sectorData}=useSectorData()
-  const {error,loading,fetchFormData}=useFormData()
-  const [formData, setFormData] = useState({
-    name: '',
-    agreeToTerms: false,
-  });
-  const { selectedOptions, handleChange, renderSelectedOptions } =useSelectOptions();
+  const { sectorData } = useSectorData();
+  const { error, loading, fetchFormData, formValue } = useFormData();
+  const [formData, setFormData] = useState({name: '',agreeToTerms: false});
+  const { selectedOptions, handleChange, renderSelectedOptions } = useSelectOptions();
   const isSaveDisabled = !formData.name || selectedOptions.length === 0 || !formData.agreeToTerms;
-  const handleSave = () => {
-    if(!isSaveDisabled){
-      const data={
-        name:formData.name,
-        terms:formData.agreeToTerms,
-        sectors:selectedOptions
-      }
-      fetchFormData(data)
+  useEffect(() => {
+    if (formValue) {
+      setFormData({
+        name: formValue?.form?.name|| '',
+        agreeToTerms: formValue?.form?.terms || false,
+      });
+    }
+  }, [formValue]);
+
+  const isModified = formValue && (formData.name !== formValue?.form?.name || formData.agreeToTerms !== formValue?.form?.terms);
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, name: e.target.value })
+  };
+
+  const handleCheckboxChange = (e) => {
+    setFormData({ ...formData, agreeToTerms: e.target.checked })
+  };
+
+  const handleSave = async() => {
+    if (!isSaveDisabled) {
+      const data = {
+        name: formData.name,
+        terms: formData.agreeToTerms,
+        sectors: selectedOptions,
+      };
+
+      const response = await fetchFormData(data,isModified,formValue?.form?._id);
+
+      // Set form data with saved values after saving
+      setFormData({
+        name: response?.form?.name || '',
+        agreeToTerms: response?.form?.terms || false,
+      });
+    } else {
+      toast.warn('All the fields are required');
     }
   };
   return (
-    <div className='' >
-        <HeaderText/>
-       <div className='mt-5'>
-        <p className='text-left text-lg font-serif font-semibold ml-1 mb-1'>Name</p>
-        <input onChange={(e) => setFormData({ ...formData, name: e.target.value })} type='text' className='py-2 px-3 rounded-md bg-transparent w-full border' placeholder='type your name..'/>
-       </div>
-       <div className='mt-5'>
-        <p className='text-left text-lg font-serif font-semibold ml-1 mb-1'>Sectors</p>
-        <FormControl className='w-full' sx={{ m: 1 }}>
+    <div className="">
+      <HeaderText />
+      <div className="mt-5">
+        <p className="text-left text-[16px] font-serif font-semibold ml-1 mb-1">Name</p>
+        <input
+          onChange={handleInputChange}
+          type="text"
+          name="name"
+          value={formData.name}
+          className="py-2 px-3 rounded-md bg-transparent w-full border"
+          placeholder="type your name.."
+        />
+      </div>
+      <div className="mt-5">
+        <p className="text-left text-[16px] font-serif font-semibold ml-1 mb-1">Sectors</p>
+        <FormControl className="w-full" sx={{ m: 1 }}>
         <InputLabel id="demo-multiple-chip-label">Sectors</InputLabel>
         <Select
           labelId="demo-multiple-chip-label"
@@ -68,35 +101,42 @@ const MainForm = () => {
             </MenuItem>
           ))}
         </Select>
-      </FormControl>
-       </div>
-       <div className='flex flex-row items-center'>
-       <label className='text-left text-lg font-serif font-semibold mx-2 mb-1'>Agree to Terms:</label>
-      <input type="checkbox" className='w-[20px] h-[20px]' checked={formData.agreeToTerms} onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })} />
-       </div>
-      <button disabled={isSaveDisabled} className={`w-[80%] ${isSaveDisabled&&"cursor-not-allowed"} h-14 bg-black text-white mx-auto rounded-md mt-7`} onClick={handleSave}>
-        {
-          loading?(
-            <CircularProgress size={22} />
-          ):(
-            <p className=' text-lg font-serif font-semibold'>Save</p>
-          )
-        }
+        </FormControl>
+      </div>
+      <div className="flex flex-row items-center">
+        <label className="text-left text-[16px] font-serif font-semibold mx-2 mb-1">Agree to Terms:</label>
+        <input
+          type="checkbox"
+          className="w-[20px] h-[20px]"
+          checked={formData.agreeToTerms}
+          onChange={handleCheckboxChange}
+          name="agreeToTerms"
+        />
+      </div>
+      <button
+        className={`w-[80%] ${isSaveDisabled && 'cursor-not-allowed'} h-14 bg-black text-white mx-auto rounded-md mt-7`}
+        onClick={handleSave}
+      >
+        {loading ? (
+          <CircularProgress   size={25} />
+        ) : (
+          <p className="text-[16px] font-serif font-semibold">{isModified ? 'Update' : 'Save'}</p>
+        )}
       </button>
       <ToastContainer
-      position="top-center"
-      autoClose={1500}
-      hideProgressBar={false}
-      newestOnTop={false}
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="dark"
+        position="top-center"
+        autoClose={1500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
       />
     </div>
-  )
-}
+  );
+};
 
-export default MainForm
+export default MainForm;
