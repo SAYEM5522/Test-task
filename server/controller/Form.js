@@ -91,5 +91,36 @@ const getAllForms=async(req,res)=>{
     });
   }
 }
+
+const updateForm = async (req, res) => {
+  try {
+    const { name, sectors, terms } = req.body;
+    // Assuming you have a unique identifier for your form, replace 'uniqueField' with the actual field name
+    const filter = { _id: req.params.id }; // Change 'uniqueField' as needed
+    // Update the form with the new values
+    const updatedForm = await Form.findOneAndUpdate(filter, { name, sectors, terms }, { new: true });
+
+    if (!updatedForm) {
+      return res.status(404).json({
+        success: false,
+        message: "Form not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Form updated successfully",
+      form: updatedForm
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message
+    });
+  }
+};
 export {createSectors,createForm,
-  getSectors,getAllForms}
+  getSectors,getAllForms,
+    updateForm}
