@@ -1,9 +1,11 @@
-const connection_url =
-  "mongodb+srv://Demo:sayembd5522@cluster0.9atbosk.mongodb.net/?retryWrites=true&w=majority";
+import { config } from 'dotenv';
+config();
+const connection_url =process.env.connection_url
 import express from "express"
 import cors from "cors"
 import bodyParser from "body-parser"
 import mongoose from "mongoose"
+import { FormRouter } from './route/Form.js';
 const PORT=process.env.PORT||8081
 const app=express()
 app.use(cors())
@@ -17,6 +19,8 @@ mongoose.connect(connection_url,{
 mongoose.connection.once('open',()=>{
   console.log("Connected Successfully")
 })
+
+app.use("/form",FormRouter)
 
 app.listen(PORT,()=>{
   console.log(`Server Started At PORT ${PORT}`)
