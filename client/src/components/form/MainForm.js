@@ -11,6 +11,7 @@ import useFormData from '../hooks/useFormData';
 import { CircularProgress } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import HeaderText from './HeaderText';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -41,14 +42,14 @@ const MainForm = () => {
     }
   };
   return (
-    <div >
-      <p className='font-serif font-medium text-lg text-center'>Please enter your name and pick the Sectors you are currently involved in.</p>
+    <div className='' >
+        <HeaderText/>
        <div className='mt-5'>
-        <p className='text-left'>Name</p>
+        <p className='text-left text-lg font-serif font-semibold ml-1 mb-1'>Name</p>
         <input onChange={(e) => setFormData({ ...formData, name: e.target.value })} type='text' className='py-2 px-3 rounded-md bg-transparent w-full border' placeholder='type your name..'/>
        </div>
        <div className='mt-5'>
-        <p className='text-left'>Sectors</p>
+        <p className='text-left text-lg font-serif font-semibold ml-1 mb-1'>Sectors</p>
         <FormControl className='w-full' sx={{ m: 1 }}>
         <InputLabel id="demo-multiple-chip-label">Sectors</InputLabel>
         <Select
@@ -70,15 +71,15 @@ const MainForm = () => {
       </FormControl>
        </div>
        <div className='flex flex-row items-center'>
-       <label className='mr-2'>Agree to Terms:</label>
+       <label className='text-left text-lg font-serif font-semibold mx-2 mb-1'>Agree to Terms:</label>
       <input type="checkbox" className='w-[20px] h-[20px]' checked={formData.agreeToTerms} onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })} />
        </div>
-      <button disabled={isSaveDisabled} className={`w-[80%] ${isSaveDisabled&&"cursor-not-allowed"} h-14 bg-white text-black mx-auto rounded-md mt-5`} onClick={handleSave}>
+      <button disabled={isSaveDisabled} className={`w-[80%] ${isSaveDisabled&&"cursor-not-allowed"} h-14 bg-black text-white mx-auto rounded-md mt-7`} onClick={handleSave}>
         {
           loading?(
             <CircularProgress size={22} />
           ):(
-            <p>save</p>
+            <p className=' text-lg font-serif font-semibold'>Save</p>
           )
         }
       </button>
