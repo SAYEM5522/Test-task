@@ -25,7 +25,7 @@ const MenuProps = {
 
 const MainForm = () => {
   const { sectorData } = useSectorData();
-  const { error, loading, fetchFormData, formValue } = useFormData();
+  const {loading, fetchFormData, formValue } = useFormData();
   const [formData, setFormData] = useState({name: '',agreeToTerms: false});
   const { selectedOptions, handleChange, renderSelectedOptions } = useSelectOptions();
   const isSaveDisabled = !formData.name || selectedOptions.length === 0 || !formData.agreeToTerms;
@@ -68,19 +68,20 @@ const MainForm = () => {
     }
   };
   return (
-    <div className="">
+    <div>
       <HeaderText />
-      <div className="mt-5">
-        <p className="text-left text-[16px] font-serif font-semibold ml-1 mb-1">Name</p>
-        <input
-          onChange={handleInputChange}
-          type="text"
-          name="name"
-          value={formData.name}
-          className="py-2 px-3 rounded-md bg-transparent w-full border"
-          placeholder="type your name.."
-        />
-      </div>
+      <div class="mt-5">
+    <label for="name" class="block text-sm text-left font-serif font-semibold text-gray-700 mb-1">Name</label>
+    <input
+        id="name"
+        name="name"
+        type="text"
+        value={formData.name}
+        onChange={handleInputChange}
+        placeholder="Type your full name..."
+        class="appearance-none block w-full bg-white border border-gray-300 rounded-md py-3 px-3 leading-5 focus:outline-none focus:black focus:black focus:border-black sm:text-sm"
+    />
+</div>
       <div className="mt-5">
         <p className="text-left text-[16px] font-serif font-semibold ml-1 mb-1">Sectors</p>
         <FormControl className="w-full" sx={{ m: 1 }}>
@@ -95,24 +96,36 @@ const MainForm = () => {
           renderValue={renderSelectedOptions}
           MenuProps={MenuProps}
         >
-          {sectorData?.sectors[0]?.sectors?.map((name,index) => (
-            <MenuItem key={index} value={name}>
-              {name}
-            </MenuItem>
-          ))}
+        
+          {!sectorData&&(
+            <div className='flex items-center justify-center h-[160px]'>
+            <CircularProgress/>
+            </div>
+          )}
+           {sectorData?.sectors[0]?.sectors?.map((name,index) => (
+                  <MenuItem key={index} value={name}>
+                    {name}
+                  </MenuItem>
+                ))}
+          
+        
+          
         </Select>
         </FormControl>
       </div>
-      <div className="flex flex-row items-center">
-        <label className="text-left text-[16px] font-serif font-semibold mx-2 mb-1">Agree to Terms:</label>
-        <input
-          type="checkbox"
-          className="w-[20px] h-[20px]"
-          checked={formData.agreeToTerms}
-          onChange={handleCheckboxChange}
-          name="agreeToTerms"
-        />
-      </div>
+      <div class="flex flex-row items-center mt-3">
+    <input
+        type="checkbox"
+        id="agreeToTerms"
+        checked={formData.agreeToTerms}
+        onChange={handleCheckboxChange}
+        name="agreeToTerms"
+        class="appearance-none w-5 h-5 border border-gray-300 rounded-[50%] checked:bg-blue-500 checked:border-transparent focus:outline-none focus:ring focus:border-blue-300 mx-2"
+    />
+    <label for="agreeToTerms" class="text-left text-sm font-serif font-semibold text-gray-800 ">
+        Agree to Terms
+    </label>
+</div>
       <button
         className={`w-[80%] ${isSaveDisabled && 'cursor-not-allowed'} h-14 bg-black text-white mx-auto rounded-md mt-7`}
         onClick={handleSave}
