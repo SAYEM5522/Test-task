@@ -13,7 +13,7 @@ const ViewForm = () => {
             <CircularProgress size={30}/>
             </div>
         ):(
-          <div className='flex items-start flex-row flex-wrap h-[480px] -mt-8 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden'>
+          <div className='flex items-start flex-row flex-wrap xl:h-[480px] lg:h-[480px] md:h-[480px] sm:h-[480px] h-[530px] -mt-8 overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden'>
            {
             sectorData?.form.map((item,index)=>{
               return(
