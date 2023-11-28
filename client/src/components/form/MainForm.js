@@ -127,7 +127,7 @@ const MainForm = () => {
     </label>
 </div>
       <button
-        className={`w-full ${isSaveDisabled && 'cursor-not-allowed'} h-14 bg-black text-white mx-auto rounded-md mt-7`}
+        className={`w-full ${isSaveDisabled && 'cursor-not-allowed'} h-14 bg-black text-white mx-auto rounded-md mt-10`}
         onClick={handleSave}
       >
         {loading ? (
