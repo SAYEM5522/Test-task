@@ -24,7 +24,7 @@ const MenuProps = {
 };
 
 const MainForm = () => {
-  const { sectorData } = useSectorData();
+  const { sectorData } = useSectorData("getsectors");
   const {loading, fetchFormData, formValue } = useFormData();
   const [formData, setFormData] = useState({name: '',agreeToTerms: false});
   const { selectedOptions, handleChange, renderSelectedOptions } = useSelectOptions();
@@ -127,7 +127,7 @@ const MainForm = () => {
     </label>
 </div>
       <button
-        className={`w-[80%] ${isSaveDisabled && 'cursor-not-allowed'} h-14 bg-black text-white mx-auto rounded-md mt-7`}
+        className={`w-full ${isSaveDisabled && 'cursor-not-allowed'} h-14 bg-black text-white mx-auto rounded-md mt-7`}
         onClick={handleSave}
       >
         {loading ? (
